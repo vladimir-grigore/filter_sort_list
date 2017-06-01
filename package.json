@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/vladimir-grigore/filter_sort_list#readme",
   "dependencies": {
+    "apac": "^3.0.2",
+    "dotenv": "^4.0.0",
     "ejs": "^2.5.6",
     "express": "^4.15.3",
     "nodemon": "^1.11.0"
