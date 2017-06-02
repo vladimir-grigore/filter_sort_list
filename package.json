@@ -21,6 +21,7 @@
   "dependencies": {
     "apac": "^3.0.2",
     "dotenv": "^4.0.0",
+    "ebay-api": "^1.13.1",
     "ejs": "^2.5.6",
     "express": "^4.15.3",
     "nodemon": "^1.11.0"
