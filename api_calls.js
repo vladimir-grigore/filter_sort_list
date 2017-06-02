@@ -1,14 +1,18 @@
 const { OperationHelper } = require('apac'); // Amazon API call
 const ebay = require('ebay-api'); // Ebay API call
+const walmart = require('walmart')(process.env.WALMART_API_KEY); //Walmart API call
 const express = require('express');
 const router  = express.Router();
 
 function makeEbayAPICall(){
   return new Promise((resolve, reject) => {
     var params = {
-      keywords: ["Camera"],
+      keywords: ['iPod'],
       paginationInput: {
         entriesPerPage: 10
+      },
+      searchResult: {
+        item: ['listingInfo']
       }
     };
 
@@ -41,9 +45,9 @@ module.exports = () => {
     });
 
     opHelper.execute('ItemSearch', {
-      'SearchIndex': 'Books',
-      'Keywords': 'harry potter',
-      'ResponseGroup': 'ItemAttributes,Offers'
+      'SearchIndex': 'Electronics',
+      'Keywords': 'Canon',
+      'ResponseGroup': 'Medium'
     }).then((results) => {
       response.json(results);
     }).catch((err) => {
@@ -59,7 +63,13 @@ module.exports = () => {
     });
   });
 
-  router.get('/walmart', (request, response) => {});
+  router.get('/walmart', (request, response) => {
+    walmart.search("camera").then((results) => {
+      response.json(results);
+    }).catch((err) => {
+      console.error("Something went wrong! ", err);
+    });
+  });
 
   return router;
 }
