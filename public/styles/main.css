@@ -1,20 +1,24 @@
 .productImage {
-  max-width: 100px;
+  width: 100px;
   max-height: 100px;
 }
 
 .productDescription {
   max-height: 100px;
   font-size: 0.8em;
+  padding: 10px;
 }
 
 .productTitle {
   max-height: 100px;
+  padding: 10px;
 }
 
 .productPrice {
+  max-width: 100px;
   margin-left:auto; 
   margin-right:0;
+  padding: 10px;
 }
 
 ul {
@@ -26,6 +30,6 @@ li {
   display: flex;
 }
 
-div {
+/*div {
   border: 1px solid red;
-}
+}*/
