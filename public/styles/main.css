@@ -1,6 +1,7 @@
 .productImage {
   width: 100px;
   max-height: 100px;
+  padding: 5px;
 }
 
 .productDescription {
@@ -26,10 +27,7 @@ ul {
 }
 
 li {
-  border: 1px solid black;
+  margin: 5px;
   display: flex;
+  box-shadow: 2px 2px 5px 0px #888888;
 }
-
-/*div {
-  border: 1px solid red;
-}*/

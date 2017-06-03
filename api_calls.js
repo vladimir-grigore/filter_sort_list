@@ -26,10 +26,11 @@ function makeEbayAPICall(){
       sandbox: true,
       params: params,
       parser: ebay.parseItemsFromResponse 
-    }, function itemsCallback(error, itemsResponse) {
-      if (error) reject(error);
-      let items = itemsResponse.searchResult.item;
-      resolve(items); 
+    }, (error, itemsResponse) => {
+      if(error) reject(error);
+      if(itemsResponse.searchResult){
+        resolve(itemsResponse.searchResult.item);
+      }
     });
   });
 }
