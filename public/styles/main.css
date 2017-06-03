@@ -8,23 +8,30 @@
   max-height: 100px;
   font-size: 0.8em;
   padding: 10px;
+  display: inline-block;
+  width: 100%;
+  white-space: wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .productTitle {
-  max-height: 100px;
+  font-size: 1.2em;
+  width: 80%;
   padding: 10px;
+  display: inline-block;
 }
 
 .productPrice {
-  max-width: 100px;
-  margin-left: auto; 
-  margin-right: 0;
+  right: 20px;
   padding: 10px;
+  display: inline-block;
+  position: absolute;
 }
 
 .filter {
   position: absolute;
-  left: 0;
+  left: 5%;
   display: inline-flex;
   padding: 20px;
 }
@@ -33,24 +40,27 @@
   margin-right: 10px;
 }
 
-/*#set-filter {
-  position: absolute;
-  right: 0;
-  margin: 20px;
-}*/
-
 ul {
   padding: 20px;
+  max-width: 90%;
   position: absolute;
-  top: 160px;
+  top: 50px;
+  left: 5%;
+  right: 5%;
 }
 
 li {
+  background: white;
   margin: 5px;
-  display: flex;
+  display: -webkit-inline-box;
   box-shadow: 2px 2px 5px 0px #888888;
+  width: 100%;
 }
 
-h1 {
-  padding: 20px;
+li:hover {
+  cursor: pointer;
+}
+
+body {
+  background: gainsboro;
 }

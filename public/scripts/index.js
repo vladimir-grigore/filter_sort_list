@@ -13,7 +13,7 @@ $(document).ready(() => {
       let image = item.MediumImage.URL;
       let title = item.ItemAttributes.Title;
       let description = item.EditorialReviews ?
-        item.EditorialReviews.EditorialReview.Content :
+        cleanEscapedText(item.EditorialReviews.EditorialReview.Content) :
         "Missing description";
       let price = item.OfferSummary.LowestNewPrice.FormattedPrice;
       populateItemsList(image, title, description, price);
@@ -26,7 +26,7 @@ $(document).ready(() => {
         item.galleryURL :
         "http://thumbs4.sandbox.ebaystatic.com/pict/1101987617634040_0.jpg";
       let title = item.title;
-      let description = item.title;
+      let description = cleanEscapedText(item.title);
       let price = item.sellingStatus.currentPrice.amount + " " +item.sellingStatus.currentPrice.currencyId;
       populateItemsList(image, title, description, price);
     }
@@ -37,7 +37,7 @@ $(document).ready(() => {
       let image = item.largeImage;
       let title = item.name;
       let description = cleanEscapedText(item.longDescription);
-      let price = item.msrp + " USD"
+      let price = item.msrp ? item.msrp + " USD" : + item.salePrice + " USD";
       populateItemsList(image, title, description, price);
     }
   }
@@ -45,9 +45,9 @@ $(document).ready(() => {
   function populateItemsList(image, productTitle, productDescription, productPrice){
     let $element = $("<li>").addClass("item").appendTo($("ul"));
     $("<img>").addClass("productImage").attr("src", image).appendTo($element);
-    $("<div>").addClass("productTitle").text(productTitle.substring(0, 20) + "...").appendTo($element);
-    $("<div>").addClass("productDescription").text(productDescription.substring(0, 700) + "...").appendTo($element);
+    $("<div>").addClass("productTitle").text(productTitle).appendTo($element);
     $("<div>").addClass("productPrice").text(productPrice).appendTo($element);
+    $("<div>").addClass("productDescription").text(productDescription).appendTo($element);
 
     // Apply list filtering
     let filter = localStorage.getItem("listFilter");
