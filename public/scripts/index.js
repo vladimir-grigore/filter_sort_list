@@ -43,23 +43,27 @@ $(document).ready(() => {
   }
 
   function populateItemsList(image, productTitle, productDescription, productPrice){
-    let $list = $("ul");
-    let $element = $("<li>").addClass("item").appendTo($list);
+    let $element = $("<li>").addClass("item").appendTo($("ul"));
     $("<img>").addClass("productImage").attr("src", image).appendTo($element);
     $("<div>").addClass("productTitle").text(productTitle.substring(0, 20) + "...").appendTo($element);
-    $("<div>").addClass("productDescription").text(productDescription.substring(0, 150) + "...").appendTo($element);
+    $("<div>").addClass("productDescription").text(productDescription.substring(0, 700) + "...").appendTo($element);
     $("<div>").addClass("productPrice").text(productPrice).appendTo($element);
 
+    // Apply list filtering
+    let filter = localStorage.getItem("listFilter");
+    $("#filter").val(filter).trigger("keyup");
+
+    // Create sortable list that saves its state in the localStorage
     let container = document.getElementById("list-container");
     let sort = Sortable.create(container, {
       animation: 150, 
       store: {
         get: function (sortable) {
-          var order = localStorage.getItem(sortable.options.group);
+          let order = localStorage.getItem(sortable.options.group);
           return order ? order.split('|') : [];
         },
         set: function (sortable) {
-          var order = sortable.toArray();
+          let order = sortable.toArray();
           localStorage.setItem(sortable.options.group, order.join('|'));
         }
       }
@@ -98,4 +102,25 @@ $(document).ready(() => {
       addWalmartProductsToList(response.items)
     });
   }
+
+  // List filtering
+  $("#filter").keyup(() => {
+    let filter = document.getElementById("filter").value.toLowerCase();
+    let li = document.getElementsByTagName("li");
+
+    for(let i = 0; i < li.length; i++){
+      let item = li[i].getElementsByClassName("productTitle")[0];
+      if(item.innerHTML.toLowerCase().indexOf(filter) > -1){
+        li[i].style.display = "";
+      } else {
+        li[i].style.display = "none";
+      }
+    }
+  });
+
+  // Save current filter to localStorage
+  $("#set-filter").click(() => {
+    let filter = document.getElementById("filter").value.toLowerCase();
+    localStorage.setItem("listFilter", filter);
+  });
 });
