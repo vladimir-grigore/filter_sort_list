@@ -32,12 +32,7 @@
 .filter {
   position: absolute;
   left: 5%;
-  display: inline-flex;
   padding: 20px;
-}
-
-#filter {
-  margin-right: 10px;
 }
 
 ul {

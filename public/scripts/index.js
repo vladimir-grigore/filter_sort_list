@@ -106,6 +106,7 @@ $(document).ready(() => {
   // List filtering
   $("#filter").keyup(() => {
     let filter = document.getElementById("filter").value.toLowerCase();
+    localStorage.setItem("listFilter", filter);
     let li = document.getElementsByTagName("li");
 
     for(let i = 0; i < li.length; i++){
@@ -116,11 +117,5 @@ $(document).ready(() => {
         li[i].style.display = "none";
       }
     }
-  });
-
-  // Save current filter to localStorage
-  $("#set-filter").click(() => {
-    let filter = document.getElementById("filter").value.toLowerCase();
-    localStorage.setItem("listFilter", filter);
   });
 });
