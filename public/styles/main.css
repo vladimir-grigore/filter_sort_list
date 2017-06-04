@@ -33,6 +33,23 @@
   position: absolute;
   left: 5%;
   padding: 20px;
+  display: -webkit-inline-box;
+}
+
+#filter {
+  margin: 5px;
+  height: 35px;
+  width: 250px;
+  border: 1px solid black;
+  border-radius: 0px;
+}
+
+#title_filter, #price_filter {
+  margin: 5px;
+  height: 35px;
+  background: white;
+  color: black;
+  border: 1px solid black;
 }
 
 ul {
