@@ -1,11 +1,34 @@
 $(document).ready(() => {
+  var sortableList;
   callAmazonAPI()
   callEbayAPI()
   callWalmartAPI();
+  checkSorting();
 
   function cleanEscapedText(text){
     var regExp = /(&lt;\/li&gt;|&lt;\/ul&gt;|&lt;br&gt;|&lt;b&gt;|&lt;\/b&gt;|&lt;ul&gt;|&lt;li&gt;)/g;
     return text.replace(regExp, '');
+  }
+
+  function checkSorting() {
+    let titleFilter = localStorage.getItem('titleSorting');
+    let priceFilter = localStorage.getItem('priceSorting');
+
+    if(titleFilter === 'z-a'){
+      $('#title_filter').text('Title filter: Z-A');
+    } else if(titleFilter === 'a-z'){
+      $('#title_filter').text('Title filter: A-Z');
+    } else {
+      $('#title_filter').text('Title filter');
+    }
+
+    if(priceFilter === 'ascending'){
+      $('#price_filter').text('Price: ascending');
+    } else if(priceFilter === 'descending'){
+      $('#price_filter').text('Price: descending');
+    } else {
+      $('#price_filter').text('Price filter');
+    }
   }
 
   function addAmazonProductsToList(productst_array){
@@ -43,19 +66,22 @@ $(document).ready(() => {
   }
 
   function populateItemsList(image, productTitle, productDescription, productPrice){
-    let $element = $("<li>").addClass("item").appendTo($("ul"));
-    $("<img>").addClass("productImage").attr("src", image).appendTo($element);
-    $("<div>").addClass("productTitle").text(productTitle).appendTo($element);
-    $("<div>").addClass("productPrice").text(productPrice).appendTo($element);
-    $("<div>").addClass("productDescription").text(productDescription).appendTo($element);
+    let $element = $("<li>").addClass("item").appendTo($("#list-container"));
+    $("<img>").addClass("productImage").attr("src", image).data("image", image).appendTo($element);
+    $("<div>").addClass("productTitle").text(productTitle).data("productTitle", productTitle).appendTo($element);
+    $("<div>").addClass("productPrice").text(productPrice).data("productPrice", productPrice).appendTo($element);
+    $("<div>").addClass("productDescription").text(productDescription).data("productDescription", productDescription).appendTo($element);
 
     // Apply list filtering
     let filter = localStorage.getItem("listFilter");
     $("#filter").val(filter).trigger("keyup");
+    createSortableList();
+  }
 
-    // Create sortable list that saves its state in the localStorage
+  // Create sortable list that saves its state in the localStorage
+  function createSortableList(){
     let container = document.getElementById("list-container");
-    let sort = Sortable.create(container, {
+    sortableList = Sortable.create(container, {
       animation: 150, 
       store: {
         get: function (sortable) {
@@ -99,7 +125,7 @@ $(document).ready(() => {
       url: "/api/walmart"
     }).done((response) => {
       console.log("walmart:", response.items);
-      addWalmartProductsToList(response.items)
+      addWalmartProductsToList(response.items);
     });
   }
 
@@ -118,4 +144,76 @@ $(document).ready(() => {
       }
     }
   });
+
+  // Sort items by title
+  $('#title_filter').click(() => {
+    let list = $('#list-container');
+    let li_elements = list.children('li').get();
+    $('li').detach();
+
+    let filterType = localStorage.getItem('titleSorting');
+    if(!filterType || filterType === 'z-a'){
+      li_elements.sort((a, b) => {
+        let titleA = a.children[1].innerHTML.toUpperCase();
+        let titleB = b.children[1].innerHTML.toUpperCase();
+        return (titleA < titleB) ? -1 : (titleA > titleB) ? 1 : 0;
+      });
+      localStorage.setItem('titleSorting', 'a-z');
+      localStorage.setItem('priceSorting', '');
+    } else {
+      li_elements.sort((a, b) => {
+        let titleA = a.children[1].innerHTML.toUpperCase();
+        let titleB = b.children[1].innerHTML.toUpperCase();
+        return (titleA < titleB) ? 1 : (titleA > titleB) ? -1 : 0;
+      });
+      localStorage.setItem('titleSorting', 'z-a');
+      localStorage.setItem('priceSorting', '');
+    }
+
+    $.each(li_elements, (id, item) => {
+      list.append(item);
+    });
+
+    sortableList.options.store.set(sortableList);
+    checkSorting();
+  });
+
+  // Sort items by price
+  $('#price_filter').click(() => {
+    let list = $('#list-container');
+    let li_elements = list.children('li').get();
+    $('li').detach();
+
+    function extractPrice(price){
+      let regExp = /[^\d\.]/g;
+      return price.replace(regExp, '');
+    }
+
+    let filterType = localStorage.getItem('priceSorting');
+    if(!filterType || filterType === 'descending'){
+      li_elements.sort((a, b) => {
+        let priceA = parseInt(extractPrice(a.children[2].innerHTML));
+        let priceB = parseInt(extractPrice(b.children[2].innerHTML));
+        return priceA - priceB;
+      });
+      localStorage.setItem('priceSorting', 'ascending');
+      localStorage.setItem('titleSorting', '');
+    } else {
+      li_elements.sort((a, b) => {
+        let priceA = parseInt(extractPrice(a.children[2].innerHTML));
+        let priceB = parseInt(extractPrice(b.children[2].innerHTML));
+        return priceB - priceA;
+      });
+      localStorage.setItem('priceSorting', 'descending');
+      localStorage.setItem('titleSorting', '');
+    }
+
+    $.each(li_elements, (id, item) => {
+      list.append(item);
+    });
+
+    sortableList.options.store.set(sortableList);
+    checkSorting();
+  });
+
 });

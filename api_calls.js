@@ -65,7 +65,7 @@ module.exports = () => {
   });
 
   router.get('/walmart', (request, response) => {
-    walmart.search("camera").then((results) => {
+    walmart.search("toy").then((results) => {
       response.json(results);
     }).catch((err) => {
       console.error("Something went wrong! ", err);

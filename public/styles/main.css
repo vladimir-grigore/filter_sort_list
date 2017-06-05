@@ -52,6 +52,10 @@
   border: 1px solid black;
 }
 
+#title_filter:hover, #price_filter:hover {
+  background: #EAE8E8;
+}
+
 ul {
   padding: 20px;
   max-width: 90%;
