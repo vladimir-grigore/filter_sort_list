@@ -7,7 +7,7 @@ const router  = express.Router();
 function makeEbayAPICall(){
   return new Promise((resolve, reject) => {
     var params = {
-      keywords: ['iPod'],
+      keywords: ['headphone'],
       paginationInput: {
         entriesPerPage: 10
       },
@@ -23,7 +23,7 @@ function makeEbayAPICall(){
       certId: process.env.CERT_ID,
       authToken: process.env.EBAY_AUTH_TOKEN,
       appId: process.env.EBAY_APP_ID,
-      sandbox: true,
+      sandbox: false,
       params: params,
       parser: ebay.parseItemsFromResponse 
     }, (error, itemsResponse) => {
