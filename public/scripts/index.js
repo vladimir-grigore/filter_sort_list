@@ -1,29 +1,22 @@
 $(document).ready(() => {
   makeAPICalls();
-  let sortableList;
+  checkSorting();
+  let sortableList; 
+  createSortableList(); 
 
   function makeAPICalls(){
     callAmazonAPI()
-      .then((response) => { 
-        addAmazonProductsToList(response); 
-      })
-      .then(() => { 
-        callEbayAPI().then((response) => { 
-          addEbayProductsToList(response); 
-        });
-      })
-      .then(() => { 
-        callWalmartAPI().then((response) => { 
-          addWalmartProductsToList(response);
-        });
-      })
-      .then(() => { 
-        createSortableList(); 
-        checkSorting();
-      })
-      .catch((err) => { 
-        console.log(err); 
-      });
+      .then((response) => { addAmazonProductsToList(response); })
+      .catch((err) => { console.log(err); });
+
+    callEbayAPI()
+      .then((response) => { addEbayProductsToList(response); })
+      .catch((err) => { console.log(err); });
+
+    callWalmartAPI()
+      .then((response) => { addWalmartProductsToList(response); })
+      .catch ((err) => { console.log(err); });
+
   }
 
   function cleanEscapedText(text){
@@ -53,48 +46,39 @@ $(document).ready(() => {
   }
 
   function addAmazonProductsToList(productst_array){
-    return new Promise((resolve, reject) => {
-      for(let item of productst_array){
-        let image = item.MediumImage.URL;
-        let title = item.ItemAttributes.Title;
-        let description = item.EditorialReviews ?
-          cleanEscapedText(item.EditorialReviews.EditorialReview.Content) :
-          "Missing description";
-        let price = item.OfferSummary.LowestNewPrice ?
-          item.OfferSummary.LowestNewPrice.FormattedPrice :
-          item.OfferSummary.LowestUsedPrice.FormattedPrice;
-        populateItemsList(image, title, description, price);
-      }
-      resolve();
-    });
+    for(let item of productst_array){
+      let image = item.MediumImage.URL;
+      let title = item.ItemAttributes.Title;
+      let description = item.EditorialReviews ?
+        cleanEscapedText(item.EditorialReviews.EditorialReview.Content) :
+        "Missing description";
+      let price = item.OfferSummary.LowestNewPrice ?
+        item.OfferSummary.LowestNewPrice.FormattedPrice :
+        item.OfferSummary.LowestUsedPrice.FormattedPrice;
+      populateItemsList(image, title, description, price);
+    }
   }
 
   function addEbayProductsToList(productst_array){
-    return new Promise((resolve, reject) => {
-      for(let item of productst_array){
-        let image = item.galleryURL ? 
-          item.galleryURL :
-          "http://thumbs4.sandbox.ebaystatic.com/pict/1101987617634040_0.jpg";
-        let title = item.title;
-        let description = cleanEscapedText(item.title);
-        let price = item.sellingStatus.currentPrice.amount + " " +item.sellingStatus.currentPrice.currencyId;
-        populateItemsList(image, title, description, price);
-      }
-      resolve();
-    });
+    for(let item of productst_array){
+      let image = item.galleryURL ? 
+        item.galleryURL :
+        "http://thumbs4.sandbox.ebaystatic.com/pict/1101987617634040_0.jpg";
+      let title = item.title;
+      let description = cleanEscapedText(item.title);
+      let price = item.sellingStatus.currentPrice.amount + " " +item.sellingStatus.currentPrice.currencyId;
+      populateItemsList(image, title, description, price);
+    }
   }
 
   function addWalmartProductsToList(productst_array){
-    return new Promise((resolve, reject) => {
-      for(let item of productst_array){
-        let image = item.largeImage;
-        let title = item.name;
-        let description = cleanEscapedText(item.longDescription);
-        let price = item.msrp ? item.msrp + " USD" : + item.salePrice + " USD";
-        populateItemsList(image, title, description, price);
-      }
-    resolve();
-    });
+    for(let item of productst_array){
+      let image = item.largeImage;
+      let title = item.name;
+      let description = cleanEscapedText(item.longDescription);
+      let price = item.msrp ? item.msrp + " USD" : + item.salePrice + " USD";
+      populateItemsList(image, title, description, price);
+    }
   }
 
   function populateItemsList(image, productTitle, productDescription, productPrice){
@@ -113,6 +97,7 @@ $(document).ready(() => {
   function createSortableList(){
     let container = document.getElementById("list-container");
     sortableList = Sortable.create(container, {
+      group: 'list-sort',
       animation: 150, 
       store: {
         get: function (sortable) {
@@ -133,7 +118,6 @@ $(document).ready(() => {
         method: "GET",
         url: "/api/amazon"
       }).done((response) => {
-        console.log("amazon:", response.result['ItemSearchResponse'].Items.Item);
         resolve(response.result['ItemSearchResponse'].Items.Item);
       }).fail((err) => {
         reject(err);
@@ -147,7 +131,6 @@ $(document).ready(() => {
         method: "GET",
         url: "/api/ebay"
       }).done((response) => {
-        console.log("ebay:", response);
         resolve(response);
       }).fail((err) => {
         reject(err);
@@ -161,7 +144,6 @@ $(document).ready(() => {
         method: "GET",
         url: "/api/walmart"
       }).done((response) => {
-        console.log("walmart:", response.items);
         resolve(response.items);
       }).fail((err) => {
         reject(err);
@@ -214,7 +196,6 @@ $(document).ready(() => {
       list.append(item);
     });
 
-    sortableList.options.store.set(sortableList);
     checkSorting();
   });
 
@@ -253,7 +234,6 @@ $(document).ready(() => {
     });
 
     checkSorting();
-    sortableList.options.store.set(sortableList);
   });
 
 });
