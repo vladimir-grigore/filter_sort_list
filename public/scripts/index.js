@@ -2,21 +2,19 @@ $(document).ready(() => {
   makeAPICalls();
   checkSorting();
   let sortableList; 
-  createSortableList(); 
 
   function makeAPICalls(){
-    callAmazonAPI()
-      .then((response) => { addAmazonProductsToList(response); })
-      .catch((err) => { console.log(err); });
-
     callEbayAPI()
       .then((response) => { addEbayProductsToList(response); })
+      .catch((err) => { console.log(err); });
+      
+    callAmazonAPI()
+      .then((response) => { addAmazonProductsToList(response); })
       .catch((err) => { console.log(err); });
 
     callWalmartAPI()
       .then((response) => { addWalmartProductsToList(response); })
       .catch ((err) => { console.log(err); });
-
   }
 
   function cleanEscapedText(text){
@@ -57,6 +55,7 @@ $(document).ready(() => {
         item.OfferSummary.LowestUsedPrice.FormattedPrice;
       populateItemsList(image, title, description, price);
     }
+    createSortableList();
   }
 
   function addEbayProductsToList(productst_array){
@@ -69,6 +68,7 @@ $(document).ready(() => {
       let price = item.sellingStatus.currentPrice.amount + " " +item.sellingStatus.currentPrice.currencyId;
       populateItemsList(image, title, description, price);
     }
+    createSortableList();
   }
 
   function addWalmartProductsToList(productst_array){
@@ -79,14 +79,16 @@ $(document).ready(() => {
       let price = item.msrp ? item.msrp + " USD" : + item.salePrice + " USD";
       populateItemsList(image, title, description, price);
     }
+    createSortableList();
   }
 
   function populateItemsList(image, productTitle, productDescription, productPrice){
-    let $element = $("<li>").addClass("item").appendTo($("#list-container"));
+    let $element = $("<li>").addClass("item");
     $("<img>").addClass("productImage").attr("src", image).data("image", image).appendTo($element);
     $("<div>").addClass("productTitle").text(productTitle).data("productTitle", productTitle).appendTo($element);
     $("<div>").addClass("productPrice").text(productPrice).data("productPrice", productPrice).appendTo($element);
     $("<div>").addClass("productDescription").text(productDescription).data("productDescription", productDescription).appendTo($element);
+    $("#list-container").append($element);
 
     // Apply list filtering
     let filter = localStorage.getItem("listFilter");
@@ -95,21 +97,26 @@ $(document).ready(() => {
 
   // Create sortable list that saves its state in the localStorage
   function createSortableList(){
-    let container = document.getElementById("list-container");
-    sortableList = Sortable.create(container, {
-      group: 'list-sort',
-      animation: 150, 
-      store: {
-        get: function (sortable) {
-          let order = localStorage.getItem(sortable.options.group);
-          return order ? order.split('|') : [];
-        },
-        set: function (sortable) {
-          let order = sortable.toArray();
-          localStorage.setItem(sortable.options.group, order.join('|'));
+    let list = $('#list-container');
+    let li_elements = list.children('li').get();
+
+    if(li_elements.length >= 30){
+      let container = document.getElementById("list-container");
+      sortableList = Sortable.create(container, {
+        group: 'list-sort',
+        animation: 150, 
+        store: {
+          get: function (sortable) {
+            let order = localStorage.getItem(sortable.options.group);
+            return order ? order.split('|') : [];
+          },
+          set: function (sortable) {
+            let order = sortable.toArray();
+            localStorage.setItem(sortable.options.group, order.join('|'));
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   function callAmazonAPI(){
@@ -196,6 +203,7 @@ $(document).ready(() => {
       list.append(item);
     });
 
+    sortableList.options.store.set(sortableList);
     checkSorting();
   });
 
@@ -233,6 +241,7 @@ $(document).ready(() => {
       list.append(item);
     });
 
+    sortableList.options.store.set(sortableList);
     checkSorting();
   });
 
